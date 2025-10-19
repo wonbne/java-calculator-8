@@ -28,7 +28,11 @@ public class Calculator {
     private String getDelimiter(String input) {
         String delimiter = DEFAULT_DELIMITER;
         if (input.startsWith("//")) {
-            int delimiterIndex = input.indexOf("\n");
+            // "\\n" 문자열로 커스텀 구분자 끝을 찾음
+            int delimiterIndex = input.indexOf("\\n");
+            if (delimiterIndex == -1) {
+                throw new IllegalArgumentException("커스텀 구분자 형식이 잘못되었습니다.");
+            }
             delimiter += "|" + Pattern.quote(input.substring(2, delimiterIndex));
         }
         return delimiter;
@@ -37,8 +41,8 @@ public class Calculator {
     //숫자 부분 추출
     private String getNumbersPart(String input) {
         if (input.startsWith("//")) {
-            int delimiterIndex = input.indexOf("\n");
-            return input.substring(delimiterIndex + 1);
+            int delimiterIndex = input.indexOf("\\n");
+            return input.substring(delimiterIndex + 2); // "\\n" 길이 2
         }
         return input;
     }
