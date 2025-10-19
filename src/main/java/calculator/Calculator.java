@@ -52,7 +52,19 @@ public class Calculator {
         int sum = 0;
         for (String token : tokens) {
             if (token.isEmpty()) continue;
-            sum += Integer.parseInt(token);
+
+            int num;
+            try {
+                num = Integer.parseInt(token);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("숫자가 아닌 값이 입력되었습니다: " + token);
+            }
+
+            if (num < 0) {
+                throw new IllegalArgumentException("음수는 허용되지 않습니다: " + num);
+            }
+
+            sum += num;
         }
         return sum;
     }
