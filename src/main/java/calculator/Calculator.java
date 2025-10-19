@@ -15,8 +15,7 @@ public class Calculator {
 
         String[] tokens = splitByDelimiter(numbers, delimiter);
 
-        //임시 리턴값
-        return -1;
+        return sumTokens(tokens);
     }
 
     //빈 문자열 처리
@@ -46,5 +45,15 @@ public class Calculator {
 
     private String[] splitByDelimiter(String input, String delimiter) {
         return input.split(delimiter);
+    }
+
+    //합계 계산
+    private int sumTokens(String[] tokens) {
+        int sum = 0;
+        for (String token : tokens) {
+            if (token.isEmpty()) continue;
+            sum += Integer.parseInt(token);
+        }
+        return sum;
     }
 }
