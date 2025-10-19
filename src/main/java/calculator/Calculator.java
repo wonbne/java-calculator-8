@@ -2,6 +2,7 @@ package calculator;
 
 import camp.nextstep.edu.missionutils.Console;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class Calculator {
     private static final String DEFAULT_DELIMITER = ",|:";
@@ -10,48 +11,40 @@ public class Calculator {
         int emptyCheck = handleEmptyInput(input);
         if (emptyCheck != -1) return emptyCheck;
 
-        String delimiter = getDelimiter(input);
-        String numbers = getNumbersPart(input);
+        // 커스텀 구분자와 숫자 문자열 추출
+        String[] result = parseDelimiterAndNumbers(input);
+        String delimiter = result[0];
+        String numbersPart = result[1];
 
-        String[] tokens = splitByDelimiter(numbers, delimiter);
+        String[] tokens = numbersPart.split(delimiter);
 
         return sumTokens(tokens);
     }
 
-    //빈 문자열 처리
+    // 빈 문자열 처리
     private int handleEmptyInput(String input) {
         if (input == null || input.isEmpty()) return 0;
         return -1;
     }
 
-    //구분자 처리
-    private String getDelimiter(String input) {
+    // 커스텀 구분자와 숫자 문자열을 동시에 처리
+    private String[] parseDelimiterAndNumbers(String input) {
         String delimiter = DEFAULT_DELIMITER;
+        String numbersPart = input;
+
         if (input.startsWith("//")) {
-            // "\\n" 문자열로 커스텀 구분자 끝을 찾음
-            int delimiterIndex = input.indexOf("\\n");
-            if (delimiterIndex == -1) {
+            Matcher m = Pattern.compile("//(.)\\\\n(.*)").matcher(input);
+            if (!m.find()) {
                 throw new IllegalArgumentException("커스텀 구분자 형식이 잘못되었습니다.");
             }
-            delimiter += "|" + Pattern.quote(input.substring(2, delimiterIndex));
+            delimiter += "|" + Pattern.quote(m.group(1));
+            numbersPart = m.group(2);
         }
-        return delimiter;
+
+        return new String[]{delimiter, numbersPart};
     }
 
-    //숫자 부분 추출
-    private String getNumbersPart(String input) {
-        if (input.startsWith("//")) {
-            int delimiterIndex = input.indexOf("\\n");
-            return input.substring(delimiterIndex + 2); // "\\n" 길이 2
-        }
-        return input;
-    }
-
-    private String[] splitByDelimiter(String input, String delimiter) {
-        return input.split(delimiter);
-    }
-
-    //합계 계산
+    // 합계 계산
     private int sumTokens(String[] tokens) {
         int sum = 0;
         for (String token : tokens) {
